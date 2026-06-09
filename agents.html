@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>STARTIQOS AI — Agent Command Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/global.css"/>
+  <link rel="stylesheet" href="css/agents.css"/>
+</head>
+<body>
+  <canvas id="network-canvas"></canvas>
+
+  <div class="app-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <polygon points="14,2 26,8 26,20 14,26 2,20 2,8" stroke="#FF2D8D" stroke-width="1.5" fill="none"/>
+            <polygon points="14,7 21,11 21,19 14,23 7,19 7,11" fill="#FF2D8D" fill-opacity="0.15" stroke="#FF5CAB" stroke-width="1"/>
+            <circle cx="14" cy="15" r="3" fill="#FF2D8D"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="logo-main">STARTIQOS</span>
+          <span class="logo-sub">AI SYSTEM</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-label">CORE</div>
+        <a href="index.html" class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="11" y="2" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="2" y="11" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="11" y="11" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+          <span>Dashboard</span>
+        </a>
+        <a href="agents.html" class="nav-item active">
+          <svg class="nav-icon" viewBox="0 0 20 20"><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/><circle cx="16" cy="5" r="2" fill="currentColor" fill-opacity="0.3" stroke="currentColor" stroke-width="1"/></svg>
+          <span>AI Agents</span>
+          <div class="nav-glow"></div>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="system-status">
+          <div class="status-dot pulse-green"></div>
+          <span>All Systems Online</span>
+        </div>
+        <div class="sidebar-version">v2.4.1 — PROD</div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      <!-- HEADER -->
+      <header class="top-header">
+        <button class="mobile-menu-btn" id="menuBtn">
+          <svg viewBox="0 0 20 20" width="20"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <div class="header-search">
+          <svg viewBox="0 0 20 20" width="16"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M13 13l3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <input type="text" placeholder="Search agents, tasks, reports…" id="headerSearch"/>
+          <span class="search-shortcut">⌘K</span>
+        </div>
+        <div class="header-right">
+          <div class="workspace-status">
+            <div class="status-dot pulse-green"></div>
+            <span>All Systems Operational</span>
+          </div>
+          <button class="header-btn notification-btn">
+            <svg viewBox="0 0 20 20" width="18"><path d="M10 2a6 6 0 016 6v3l1.5 2.5H2.5L4 11V8a6 6 0 016-6z" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M8 15.5a2 2 0 004 0" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+            <span class="notif-badge">4</span>
+          </button>
+          <div class="user-profile">
+            <div class="user-avatar">
+              <span>SS</span>
+              <div class="avatar-ring"></div>
+            </div>
+            <div class="user-info">
+              <span class="user-name">Shaswat Sharma</span>
+              <span class="user-role">Founder</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- AGENTS BODY -->
+      <div class="dashboard-body">
+        <!-- PAGE HEADER -->
+        <section class="page-header-section">
+          <div class="page-header-text">
+            <div class="hero-eyebrow">
+              <div class="pulse-dot"></div>
+              11 AGENTS DEPLOYED
+            </div>
+            <h1 class="hero-title">AI Agent <span class="gradient-text">Command</span> Center</h1>
+            <p class="hero-subtitle">Deploy, monitor, and reconfigure all AI operational systems.</p>
+          </div>
+          <button class="btn-primary btn-large" id="addAgentBtn">
+            <svg viewBox="0 0 20 20" width="16"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Deploy New Agent
+          </button>
+        </section>
+
+        <!-- FILTERS ROW -->
+        <div class="filters-row">
+          <div class="filter-search">
+            <svg viewBox="0 0 20 20" width="16"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M13 13l3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <input type="text" placeholder="Filter agents…" id="agentSearch"/>
+          </div>
+          <div class="filter-group">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="online">Online</button>
+            <button class="filter-btn" data-filter="busy">Busy</button>
+            <button class="filter-btn" data-filter="idle">Idle</button>
+          </div>
+          <div class="filter-group">
+            <select class="filter-select" id="categoryFilter">
+              <option value="all">All Departments</option>
+              <option value="marketing">Marketing</option>
+              <option value="growth">Growth</option>
+              <option value="operations">Operations</option>
+              <option value="research">Research</option>
+            </select>
+          </div>
+          <div class="view-toggle">
+            <button class="view-btn active" data-view="grid" title="Grid view">
+              <svg viewBox="0 0 16 16" width="14"><rect x="1" y="1" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="9" y="1" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="1" y="9" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="9" y="9" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+            </button>
+            <button class="view-btn" data-view="list" title="List view">
+              <svg viewBox="0 0 16 16" width="14"><path d="M3 4h10M3 8h10M3 12h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- AGENTS GRID -->
+        <div class="agents-full-grid" id="agents-full-grid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- AGENT DETAIL MODAL -->
+  <div class="modal-overlay" id="agentModal">
+    <div class="modal-container" id="modalContainer">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+  <!-- DEPLOY AGENT MODAL -->
+  <div class="modal-overlay" id="deployModal">
+    <div class="modal-container modal-sm">
+      <div class="modal-header">
+        <h3 class="modal-title">Deploy New Agent</h3>
+        <button class="modal-close" id="deployModalClose">
+          <svg viewBox="0 0 20 20" width="18"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="color:var(--text-secondary);font-size:14px;margin-bottom:24px;">Configure and deploy a new AI agent to the STARTIQOS network.</p>
+        <div class="form-group">
+          <label class="form-label">Agent Name</label>
+          <input type="text" class="form-input" placeholder="e.g. Content Strategy AI"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Department</label>
+          <select class="form-input">
+            <option>Marketing</option>
+            <option>Growth</option>
+            <option>Operations</option>
+            <option>Research</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">AI Model</label>
+          <select class="form-input">
+            <option>Claude Sonnet 4</option>
+            <option>GPT-4o</option>
+            <option>Gemini 1.5 Pro</option>
+          </select>
+        </div>
+        <button class="btn-primary" style="width:100%;justify-content:center;margin-top:8px;">
+          <svg viewBox="0 0 20 20" width="16"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Deploy Agent
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/network-bg.js"></script>
+  <script src="js/agents.js"></script>
+</body>
+</html>
