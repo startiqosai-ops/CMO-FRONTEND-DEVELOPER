@@ -5,117 +5,135 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Agents | Marketing OS</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        primary: '#4F46E5', secondary: '#10B981', accent: '#8B5CF6',
+                        success: '#059669', warning: '#D97706', error: '#DC2626',
+                        info: '#3B82F6', background: '#F3F4F6', card: '#FFFFFF',
+                        'text-primary': '#1F2937', 'text-secondary': '#6B7280', border: '#E5E7EB',
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .modal-overlay { background: rgba(0, 0, 0, 0.5); }
+        body { font-family: 'Inter', sans-serif; background-color: #F3F4F6; }
+        .modal-overlay { background-color: rgba(31, 41, 55, 0.75); }
     </style>
 </head>
-<body class="bg-[#F3F4F6] text-[#1F2937]">
-    <div id="sidebar-container"></div>
+<body class="flex">
+    <div id="sidebar-target"></div>
 
-    <div class="ml-64 flex flex-col min-h-screen">
-        <div id="header-container"></div>
+    <main class="flex-1 ml-64 min-h-screen flex flex-col">
+        <div id="header-target"></div>
 
-        <main class="p-6 space-y-6">
-            <!-- Filter Bar & Search -->
-            <div class="bg-white p-4 rounded-lg border border-[#E5E7EB] shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div class="flex items-center space-x-2">
-                    <button onclick="filterAgents('all')" class="px-4 py-2 text-sm font-semibold rounded-md bg-[#EEF2FF] text-[#4F46E5] border border-[#4F46E5]">All Agents</button>
-                    <button onclick="filterAgents('online')" class="px-4 py-2 text-sm font-medium rounded-md text-[#6B7280] hover:bg-gray-50 border border-transparent transition-colors">Online</button>
-                    <button onclick="filterAgents('working')" class="px-4 py-2 text-sm font-medium rounded-md text-[#6B7280] hover:bg-gray-50 border border-transparent transition-colors">Working</button>
-                    <button onclick="filterAgents('offline')" class="px-4 py-2 text-sm font-medium rounded-md text-[#6B7280] hover:bg-gray-50 border border-transparent transition-colors">Offline</button>
+        <div class="p-6 space-y-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-[#1F2937]">AI Agents Fleet</h1>
+                    <p class="text-sm text-[#6B7280]">Monitor and configure 11 autonomous agents.</p>
                 </div>
-                <div class="relative">
-                    <input type="text" id="agentSearch" onkeyup="searchAgents()" placeholder="Search agents by name or role..." class="pl-10 pr-4 py-2 bg-[#F3F4F6] border border-[#E5E7EB] rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5] w-80 transition-all">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                <button class="bg-[#4F46E5] text-white px-4 py-2 rounded-md font-bold text-sm shadow-sm hover:bg-[#3b35be] transition-all flex items-center">
+                    <i class="fa-solid fa-plus mr-2"></i> Deploy Agent
+                </button>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-4 rounded-lg shadow-sm border border-[#E5E7EB]">
+                <div class="flex bg-[#F3F4F6] p-1 rounded-md">
+                    <button onclick="filterAgents('All')" class="px-4 py-2 text-xs font-bold rounded-md bg-white text-[#4F46E5] shadow-sm transition-all filter-btn" data-filter="All">All</button>
+                    <button onclick="filterAgents('Online')" class="px-4 py-2 text-xs font-bold rounded-md text-[#6B7280] hover:text-[#4F46E5] transition-all filter-btn" data-filter="Online">Online</button>
+                    <button onclick="filterAgents('Offline')" class="px-4 py-2 text-xs font-bold rounded-md text-[#6B7280] hover:text-[#4F46E5] transition-all filter-btn" data-filter="Offline">Offline</button>
+                    <button onclick="filterAgents('Working')" class="px-4 py-2 text-xs font-bold rounded-md text-[#6B7280] hover:text-[#4F46E5] transition-all filter-btn" data-filter="Working">Working</button>
+                </div>
+                <div class="relative w-full md:w-80">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-[#6B7280]">
+                        <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                    </span>
+                    <input type="text" id="agentSearch" onkeyup="searchAgents()" placeholder="Search agents..." class="block w-full pl-9 pr-3 py-2 border border-[#E5E7EB] rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-[#4F46E5] transition-all">
                 </div>
             </div>
 
             <!-- Agent Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="agent-grid">
-                <!-- Agents injected by JS -->
-            </div>
-        </main>
-    </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="agentGridFull"></div>
+        </div>
+    </main>
 
     <!-- Agent Detail Modal -->
-    <div id="agentModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
-            <div class="p-6 border-b border-[#E5E7EB] flex items-center justify-between">
-                <div class="flex items-center">
-                    <div id="modalAgentIcon" class="w-12 h-12 rounded-full bg-[#EEF2FF] text-[#4F46E5] flex items-center justify-center text-xl mr-4 shadow-inner">
-                        <i class="fa-solid fa-robot"></i>
+    <div id="agentModal" class="fixed inset-0 z-50 hidden">
+        <div class="modal-overlay absolute inset-0"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
+                <div class="p-6 border-b border-[#E5E7EB] flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div id="modalAgentIcon" class="w-12 h-12 bg-[#F3F4F6] text-[#4F46E5] rounded-md flex items-center justify-center text-xl"></div>
+                        <div>
+                            <h2 id="modalAgentName" class="text-xl font-bold text-[#1F2937]"></h2>
+                            <p id="modalAgentStatus" class="text-xs font-bold uppercase tracking-wider"></p>
+                        </div>
                     </div>
-                    <div>
-                        <h2 id="modalAgentName" class="text-xl font-bold">Agent Name</h2>
-                        <p id="modalAgentStatus" class="text-sm font-medium text-[#10B981] flex items-center uppercase tracking-wider">
-                            <span class="w-2 h-2 rounded-full bg-[#10B981] mr-2"></span> Online
-                        </p>
-                    </div>
+                    <button onclick="closeAgentModal()" class="text-[#6B7280] hover:text-[#DC2626] transition-colors"><i class="fa-solid fa-xmark text-2xl"></i></button>
                 </div>
-                <button onclick="closeAgentModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
-                    <i class="fa-solid fa-xmark text-2xl"></i>
-                </button>
-            </div>
-
-            <!-- Tabs -->
-            <div class="bg-gray-50 px-6 border-b border-[#E5E7EB] flex items-center space-x-6">
-                <button onclick="switchTab('status')" class="py-4 text-sm font-semibold border-b-2 border-[#4F46E5] text-[#4F46E5]" id="tab-status">Status Overview</button>
-                <button onclick="switchTab('queue')" class="py-4 text-sm font-medium border-b-2 border-transparent text-[#6B7280] hover:text-[#4F46E5]" id="tab-queue">Task Queue</button>
-                <button onclick="switchTab('config')" class="py-4 text-sm font-medium border-b-2 border-transparent text-[#6B7280] hover:text-[#4F46E5]" id="tab-config">Configuration</button>
-                <button onclick="switchTab('logs')" class="py-4 text-sm font-medium border-b-2 border-transparent text-[#6B7280] hover:text-[#4F46E5]" id="tab-logs">Audit Logs</button>
-            </div>
-
-            <div class="flex-1 overflow-y-auto p-6" id="modalContent">
-                <!-- Status Tab Content (Default) -->
-                <div id="content-status" class="space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-gray-50 p-4 rounded-lg border border-[#E5E7EB]">
-                            <p class="text-xs font-bold text-gray-500 uppercase">Success Rate</p>
-                            <h4 class="text-2xl font-bold mt-1">98.2%</h4>
-                        </div>
-                        <div class="bg-gray-50 p-4 rounded-lg border border-[#E5E7EB]">
-                            <p class="text-xs font-bold text-gray-500 uppercase">Tasks Today</p>
-                            <h4 class="text-2xl font-bold mt-1">1,240</h4>
-                        </div>
-                        <div class="bg-gray-50 p-4 rounded-lg border border-[#E5E7EB]">
-                            <p class="text-xs font-bold text-gray-500 uppercase">Avg. Response</p>
-                            <h4 class="text-2xl font-bold mt-1">0.4s</h4>
-                        </div>
-                    </div>
-                    <div class="bg-white p-4 border border-[#E5E7EB] rounded-lg">
-                        <h4 class="font-bold text-sm mb-4">Performance Velocity</h4>
-                        <div class="h-64">
-                            <canvas id="agentPerformanceChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-3 pt-4">
-                        <button onclick="agentAction('start')" class="px-6 py-2.5 bg-[#4F46E5] text-white rounded-md font-bold text-sm shadow-sm hover:bg-[#4338CA] transition-colors"><i class="fa-solid fa-play mr-2"></i> Start</button>
-                        <button onclick="agentAction('stop')" class="px-6 py-2.5 bg-white border border-[#E5E7EB] text-[#DC2626] rounded-md font-bold text-sm hover:bg-red-50 transition-colors"><i class="fa-solid fa-stop mr-2"></i> Stop</button>
-                        <button onclick="agentAction('pause')" class="px-6 py-2.5 bg-white border border-[#E5E7EB] text-[#D97706] rounded-md font-bold text-sm hover:bg-amber-50 transition-colors"><i class="fa-solid fa-pause mr-2"></i> Pause</button>
-                        <button onclick="agentAction('restart')" class="px-6 py-2.5 bg-white border border-[#E5E7EB] text-[#3B82F6] rounded-md font-bold text-sm hover:bg-blue-50 transition-colors"><i class="fa-solid fa-rotate-right mr-2"></i> Restart</button>
-                    </div>
+                <div class="flex border-b border-[#E5E7EB] bg-[#F3F4F6]">
+                    <button onclick="switchTab('status')" class="px-6 py-4 text-sm font-bold text-[#4F46E5] border-b-2 border-[#4F46E5] modal-tab" data-tab="status">Status</button>
+                    <button onclick="switchTab('queue')" class="px-6 py-4 text-sm font-bold text-[#6B7280] hover:text-[#4F46E5] modal-tab" data-tab="queue">Task Queue</button>
+                    <button onclick="switchTab('config')" class="px-6 py-4 text-sm font-bold text-[#6B7280] hover:text-[#4F46E5] modal-tab" data-tab="config">Configuration</button>
+                    <button onclick="switchTab('logs')" class="px-6 py-4 text-sm font-bold text-[#6B7280] hover:text-[#4F46E5] modal-tab" data-tab="logs">Logs</button>
                 </div>
-                <!-- Other tabs hidden initially -->
-                <div id="content-queue" class="hidden">Task queue visualization...</div>
-                <div id="content-config" class="hidden">Configuration parameters...</div>
-                <div id="content-logs" class="hidden">Real-time log stream...</div>
+                <div class="flex-1 overflow-y-auto p-6">
+                    <div id="tabContent_status" class="tab-content">
+                        <div class="grid grid-cols-3 gap-6 mb-6">
+                            <div class="bg-[#F3F4F6] p-4 rounded-lg"><p class="text-xs text-[#6B7280] font-bold uppercase mb-1">Success Rate</p><p class="text-xl font-bold text-[#1F2937]">99.2%</p></div>
+                            <div class="bg-[#F3F4F6] p-4 rounded-lg"><p class="text-xs text-[#6B7280] font-bold uppercase mb-1">Avg response</p><p class="text-xl font-bold text-[#1F2937]">1.2s</p></div>
+                            <div class="bg-[#F3F4F6] p-4 rounded-lg"><p class="text-xs text-[#6B7280] font-bold uppercase mb-1">Tasks Done</p><p class="text-xl font-bold text-[#1F2937]">2,482</p></div>
+                        </div>
+                        <h3 class="text-sm font-bold text-[#1F2937] mb-4">Performance Velocity</h3>
+                        <div class="h-64 border border-[#E5E7EB] rounded-lg p-4"><canvas id="agentChart"></canvas></div>
+                    </div>
+                    <div id="tabContent_queue" class="tab-content hidden space-y-3">
+                        <div class="flex items-center justify-between p-3 border border-[#E5E7EB] rounded-md bg-[#F3F4F6]"><span class="text-sm font-bold text-[#1F2937]">Analyze conversion data</span><span class="text-[10px] font-bold text-[#4F46E5] px-2 py-1 bg-white rounded">Priority: High</span></div>
+                        <div class="flex items-center justify-between p-3 border border-[#E5E7EB] rounded-md"><span class="text-sm text-[#1F2937]">Generate social copy</span><span class="text-[10px] font-bold text-[#6B7280] px-2 py-1 bg-[#F3F4F6] rounded">Queued</span></div>
+                    </div>
+                    <div id="tabContent_config" class="tab-content hidden"><div class="space-y-4 max-w-md"><div><label class="block text-xs font-bold text-[#6B7280] uppercase mb-2">Primary Model</label><select class="w-full p-2 border border-[#E5E7EB] rounded-md text-sm"><option>GPT-4o (Production)</option><option>Claude 3.5 Sonnet</option></select></div><div><label class="block text-xs font-bold text-[#6B7280] uppercase mb-2">Temperature</label><input type="range" class="w-full"></div></div></div>
+                    <div id="tabContent_logs" class="tab-content hidden"><div class="bg-[#1F2937] text-white p-4 rounded-md font-mono text-xs h-64 overflow-y-auto space-y-1"><p class="text-[#10B981]">[2024-05-20 14:02:11] Handshake successful.</p><p>[2024-05-20 14:02:15] Loading vector context...</p><p>[2024-05-20 14:05:32] Task ID: #A-294 initialized.</p><p class="text-[#D97706]">[2024-05-20 14:10:02] Warning: High latency from API.</p></div></div>
+                </div>
+                <div class="p-6 border-t border-[#E5E7EB] flex space-x-3 bg-[#F3F4F6]">
+                    <button class="flex-1 bg-[#4F46E5] text-white py-2 rounded-md font-bold text-sm">Start</button>
+                    <button class="flex-1 bg-[#DC2626] text-white py-2 rounded-md font-bold text-sm">Stop</button>
+                    <button class="flex-1 bg-[#D97706] text-white py-2 rounded-md font-bold text-sm">Pause</button>
+                    <button class="flex-1 border border-[#E5E7EB] bg-white text-[#1F2937] py-2 rounded-md font-bold text-sm">Restart</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script src="js/agents.js"></script>
     <script>
-        // Load components
         async function loadComponents() {
-            const sidebar = await fetch('components/sidebar.html').then(r => r.text());
-            const header = await fetch('components/header.html').then(r => r.text());
-            document.getElementById('sidebar-container').innerHTML = sidebar;
-            document.getElementById('header-container').innerHTML = header;
-            document.getElementById('page-title').textContent = "AI Agent Command Center";
+            try {
+                const sidebarResp = await fetch('components/sidebar.html');
+                const sidebarHtml = await sidebarResp.text();
+                document.getElementById('sidebar-target').innerHTML = sidebarHtml;
+
+                const headerResp = await fetch('components/header.html');
+                const headerHtml = await headerResp.text();
+                document.getElementById('header-target').innerHTML = headerHtml;
+                
+                setTimeout(() => {
+                    const navAgents = document.getElementById('nav-agents');
+                    if (navAgents) {
+                        navAgents.classList.add('bg-white/10', 'text-white', 'shadow-sm');
+                        navAgents.classList.remove('text-white/70');
+                    }
+                }, 50);
+            } catch (err) { console.error(err); }
         }
         loadComponents();
     </script>

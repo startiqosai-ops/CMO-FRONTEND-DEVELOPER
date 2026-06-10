@@ -1,89 +1,86 @@
-/**
- * AI Agents Management Logic
- */
+// js/agents.js
 
 const allAgents = [
-    { id: 1, name: "SEO Strategist", role: "Search Optimization", status: "online", efficiency: "94%", tasks: 1240, icon: "fa-search" },
-    { id: 2, name: "Ad Optimizer", role: "Paid Media", status: "working", efficiency: "98%", tasks: 850, icon: "fa-rectangle-ad" },
-    { id: 3, name: "Content AI", role: "Content Generation", status: "online", efficiency: "91%", tasks: 420, icon: "fa-pen-nib" },
-    { id: 4, name: "Email Bot", role: "Email Marketing", status: "working", efficiency: "88%", tasks: 2100, icon: "fa-envelope" },
-    { id: 5, name: "Social Manager", role: "Social Media", status: "online", efficiency: "82%", tasks: 340, icon: "fa-share-nodes" },
-    { id: 6, name: "Market Analyst", role: "Research & Analysis", status: "offline", efficiency: "0%", tasks: 0, icon: "fa-chart-pie" },
-    { id: 7, name: "Lead Finder", role: "B2B Prospecting", status: "working", efficiency: "95%", tasks: 150, icon: "fa-user-plus" },
-    { id: 8, name: "Budget Monitor", role: "Financial Control", status: "online", efficiency: "100%", tasks: 50, icon: "fa-scale-balanced" },
-    { id: 9, name: "Creative Gen", role: "Design & Video", status: "working", efficiency: "92%", tasks: 85, icon: "fa-palette" },
-    { id: 10, name: "Competitor AI", role: "Market Intel", status: "online", efficiency: "96%", tasks: 300, icon: "fa-eye" },
-    { id: 11, name: "Brand Guardian", role: "Compliance", status: "online", efficiency: "100%", tasks: 12, icon: "fa-shield-halved" }
+    { id: 1, name: "CMO Orchestrator", icon: "fa-brain", status: "Online", performance: "98%", tasks: 142, description: "Master system brain" },
+    { id: 2, name: "Brand Manager", icon: "fa-palette", status: "Working", performance: "94%", tasks: 89, description: "Visual identity lead" },
+    { id: 3, name: "SEO Strategist", icon: "fa-magnifying-glass-chart", status: "Online", performance: "91%", tasks: 210, description: "Search optimization" },
+    { id: 4, name: "Social Specialist", icon: "fa-hashtag", status: "Working", performance: "88%", tasks: 324, description: "Social channel growth" },
+    { id: 5, name: "Email Marketer", icon: "fa-envelope-open-text", status: "Online", performance: "95%", tasks: 156, description: "Drip campaign expert" },
+    { id: 6, name: "Paid Media Buyer", icon: "fa-money-bill-trend-up", status: "Offline", performance: "97%", tasks: 45, description: "Ad spend optimizer" },
+    { id: 7, name: "Content Writer", icon: "fa-pen-nib", status: "Online", performance: "92%", tasks: 112, description: "AI copywriter" },
+    { id: 8, name: "Market Researcher", icon: "fa-chart-pie", status: "Online", performance: "89%", tasks: 67, description: "Competitor intelligence" },
+    { id: 9, name: "Customer Support", icon: "fa-headset", status: "Online", performance: "99%", tasks: 432, description: "Autonomous helpdesk" },
+    { id: 10, name: "Operations Mgr", icon: "fa-gears", status: "Working", performance: "96%", tasks: 28, description: "Workflow coordinator" },
+    { id: 11, name: "PR Specialist", icon: "fa-newspaper", status: "Online", performance: "90%", tasks: 54, description: "Media relations bot" }
 ];
 
-let filteredAgents = [...allAgents];
-let performanceChart = null;
+let currentFilter = 'All';
+let agentPerformanceChart = null;
 
-function renderAgentGrid() {
-    const grid = document.getElementById('agent-grid');
+function renderAgentsFull() {
+    const grid = document.getElementById('agentGridFull');
     if (!grid) return;
-    
-    grid.innerHTML = filteredAgents.map(agent => {
-        const statusColor = agent.status === 'online' ? '#10B981' : (agent.status === 'working' ? '#4F46E5' : '#6B7280');
-        const statusBg = agent.status === 'online' ? '#ECFDF5' : (agent.status === 'working' ? '#EEF2FF' : '#F3F4F6');
-        const statusText = agent.status === 'online' ? '#059669' : (agent.status === 'working' ? '#4338CA' : '#374151');
 
-        return `
-        <div class="bg-white border border-[#E5E7EB] rounded-lg p-6 shadow-sm hover:shadow-md hover:border-[#4F46E5] transition-all group">
+    const searchTerm = document.getElementById('agentSearch').value.toLowerCase();
+    
+    const filtered = allAgents.filter(agent => {
+        const matchesFilter = currentFilter === 'All' || agent.status === currentFilter;
+        const matchesSearch = agent.name.toLowerCase().includes(searchTerm);
+        return matchesFilter && matchesSearch;
+    });
+
+    grid.innerHTML = filtered.map(agent => `
+        <div class="bg-white p-6 rounded-lg shadow-sm border border-[#E5E7EB] hover:shadow-md hover:border-[#4F46E5] transition-all cursor-pointer group" onclick="openAgentModal(${agent.id})">
             <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 rounded-full flex items-center justify-center bg-gray-50 text-gray-500 group-hover:bg-[#EEF2FF] group-hover:text-[#4F46E5] transition-colors shadow-sm">
-                    <i class="fa-solid ${agent.icon} text-lg"></i>
+                <div class="w-12 h-12 bg-[#F3F4F6] text-[#4F46E5] rounded-md flex items-center justify-center text-xl group-hover:bg-[#4F46E5] group-hover:text-white transition-all">
+                    <i class="fa-solid ${agent.icon}"></i>
                 </div>
-                <span class="px-2.5 py-1 text-[10px] font-bold uppercase rounded-full" style="background-color: ${statusBg}; color: ${statusText}">
-                    ${agent.status}
-                </span>
+                <span class="text-[10px] font-bold ${getStatusColor(agent.status)} px-2 py-1 bg-[#F3F4F6] rounded uppercase">${agent.status}</span>
             </div>
-            <h3 class="font-bold text-[#1F2937] group-hover:text-[#4F46E5] transition-colors">${agent.name}</h3>
-            <p class="text-xs text-[#6B7280] mb-4 font-medium uppercase tracking-tight">${agent.role}</p>
-            
-            <div class="grid grid-cols-2 gap-4 mb-6">
-                <div class="bg-gray-50 p-2 rounded border border-gray-100 text-center">
-                    <p class="text-[10px] font-bold text-gray-400 uppercase">Efficiency</p>
-                    <p class="text-sm font-bold text-[#1F2937]">${agent.efficiency}</p>
+            <h3 class="font-bold text-[#1F2937] text-base group-hover:text-[#4F46E5] transition-colors">${agent.name}</h3>
+            <p class="text-xs text-[#6B7280] mt-1 line-clamp-1">${agent.description}</p>
+            <div class="mt-4 flex justify-between items-center bg-[#F3F4F6] p-3 rounded-md">
+                <div class="text-center">
+                    <p class="text-[10px] text-[#6B7280] uppercase font-bold">Perf</p>
+                    <p class="text-sm font-bold text-[#1F2937]">${agent.performance}</p>
                 </div>
-                <div class="bg-gray-50 p-2 rounded border border-gray-100 text-center">
-                    <p class="text-[10px] font-bold text-gray-400 uppercase">Tasks</p>
-                    <p class="text-sm font-bold text-[#1F2937]">${agent.tasks.toLocaleString()}</p>
+                <div class="text-center">
+                    <p class="text-[10px] text-[#6B7280] uppercase font-bold">Tasks</p>
+                    <p class="text-sm font-bold text-[#1F2937]">${agent.tasks}</p>
                 </div>
             </div>
-            
-            <button onclick="openAgentModal(${agent.id})" class="w-full py-2.5 bg-[#F3F4F6] text-[#1F2937] rounded-md font-bold text-xs hover:bg-[#4F46E5] hover:text-white transition-all">
-                MANAGE AGENT
-            </button>
+            <div class="mt-4 flex space-x-2">
+                <button class="flex-1 py-2 text-[#4F46E5] text-[10px] font-bold uppercase border border-[#E5E7EB] rounded-md hover:bg-[#F3F4F6] transition-all">Configure</button>
+            </div>
         </div>
-        `;
-    }).join('');
+    `).join('');
 }
 
-function filterAgents(status) {
-    if (status === 'all') {
-        filteredAgents = [...allAgents];
-    } else {
-        filteredAgents = allAgents.filter(a => a.status === status);
+function getStatusColor(status) {
+    switch (status) {
+        case 'Online': return 'text-[#059669]';
+        case 'Working': return 'text-[#4F46E5]';
+        case 'Offline': return 'text-[#DC2626]';
+        default: return 'text-[#6B7280]';
     }
-    
-    // Update button states
-    const buttons = document.querySelectorAll('.filter-bar button');
-    buttons.forEach(btn => {
-        btn.classList.remove('bg-[#EEF2FF]', 'text-[#4F46E5]', 'border-[#4F46E5]');
-        btn.classList.add('text-[#6B7280]', 'border-transparent');
+}
+
+function filterAgents(filter) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        if (btn.dataset.filter === filter) {
+            btn.classList.add('bg-white', 'text-[#4F46E5]', 'shadow-sm');
+            btn.classList.remove('text-[#6B7280]');
+        } else {
+            btn.classList.remove('bg-white', 'text-[#4F46E5]', 'shadow-sm');
+            btn.classList.add('text-[#6B7280]');
+        }
     });
-    
-    renderAgentGrid();
+    renderAgentsFull();
 }
 
 function searchAgents() {
-    const query = document.getElementById('agentSearch').value.toLowerCase();
-    filteredAgents = allAgents.filter(a => 
-        a.name.toLowerCase().includes(query) || 
-        a.role.toLowerCase().includes(query)
-    );
-    renderAgentGrid();
+    renderAgentsFull();
 }
 
 function openAgentModal(id) {
@@ -91,72 +88,65 @@ function openAgentModal(id) {
     if (!agent) return;
 
     document.getElementById('modalAgentName').textContent = agent.name;
-    document.getElementById('modalAgentStatus').innerHTML = `
-        <span class="w-2 h-2 rounded-full bg-[#10B981] mr-2"></span> ${agent.status}
-    `;
+    document.getElementById('modalAgentStatus').textContent = agent.status;
+    document.getElementById('modalAgentStatus').className = `text-xs font-bold uppercase tracking-wider ${getStatusColor(agent.status)}`;
+    document.getElementById('modalAgentIcon').innerHTML = `<i class="fa-solid ${agent.icon}"></i>`;
     
     document.getElementById('agentModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    
     initializeAgentChart();
 }
 
 function closeAgentModal() {
     document.getElementById('agentModal').classList.add('hidden');
-    if (performanceChart) {
-        performanceChart.destroy();
-        performanceChart = null;
-    }
+    document.body.style.overflow = 'auto';
 }
 
-function switchTab(tabId) {
-    const tabs = ['status', 'queue', 'config', 'logs'];
-    tabs.forEach(t => {
-        const btn = document.getElementById(`tab-${t}`);
-        const content = document.getElementById(`content-${t}`);
-        
-        if (t === tabId) {
-            btn.classList.add('border-[#4F46E5]', 'text-[#4F46E5]');
-            btn.classList.remove('border-transparent', 'text-[#6B7280]');
-            content?.classList.remove('hidden');
+function switchTab(tab) {
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+    document.getElementById(`tabContent_${tab}`).classList.remove('hidden');
+    
+    document.querySelectorAll('.modal-tab').forEach(t => {
+        if (t.dataset.tab === tab) {
+            t.classList.add('text-[#4F46E5]', 'border-b-2', 'border-[#4F46E5]');
+            t.classList.remove('text-[#6B7280]');
         } else {
-            btn.classList.remove('border-[#4F46E5]', 'text-[#4F46E5]');
-            btn.classList.add('border-transparent', 'text-[#6B7280]');
-            content?.classList.add('hidden');
+            t.classList.remove('text-[#4F46E5]', 'border-b-2', 'border-[#4F46E5]');
+            t.classList.add('text-[#6B7280]');
         }
     });
 }
 
 function initializeAgentChart() {
-    const canvas = document.getElementById('agentPerformanceChart');
-    if (!canvas) return;
+    const ctx = document.getElementById('agentChart').getContext('2d');
+    if (agentPerformanceChart) agentPerformanceChart.destroy();
     
-    const ctx = canvas.getContext('2d');
-    performanceChart = new Chart(ctx, {
-        type: 'bar',
+    agentPerformanceChart = new Chart(ctx, {
+        type: 'line',
         data: {
-            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
             datasets: [{
-                label: 'Task Velocity',
-                data: [65, 82, 75, 94, 88, 45, 30],
-                backgroundColor: '#4F46E5',
-                borderRadius: 4
+                label: 'Efficiency',
+                data: [82, 88, 85, 92, 94, 91, 98],
+                borderColor: '#4F46E5',
+                tension: 0.4,
+                pointRadius: 0,
+                fill: false
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
             scales: {
-                y: { beginAtZero: true, grid: { display: false } },
-                x: { grid: { display: false } }
+                y: { display: false },
+                x: { display: false }
             }
         }
     });
 }
 
-function agentAction(action) {
-    console.log(`Action: ${action} initiated for current agent.`);
-    alert(`Agent command [${action.toUpperCase()}] broadcasted to system nodes.`);
-}
-
 document.addEventListener('DOMContentLoaded', () => {
-    renderAgentGrid();
+    renderAgentsFull();
 });
