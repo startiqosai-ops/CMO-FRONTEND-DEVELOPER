@@ -1,29 +1,22 @@
-import { Outlet } from 'react-router-dom';
-import Sidebar from './Sidebar';
-import Header from './Header';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Outlet } from 'react-router-dom'
+import { useState } from 'react'
+import Sidebar from './Sidebar'
+import Header from './Header'
 
-const MainLayout = () => {
+function MainLayout() {
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
   return (
-    <div className="flex min-h-screen bg-background font-sans text-text-primary">
-      <Sidebar />
-      <div className="flex-1 ml-64 flex flex-col">
-        <Header />
-        <main className="p-6 overflow-x-hidden">
-          <AnimatePresence mode="wait">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Outlet />
-            </motion.div>
-          </AnimatePresence>
+    <div className="flex h-screen overflow-hidden bg-gray-100">
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+        <Header onMenuClick={() => setSidebarOpen(true)} />
+        <main className="flex-1 overflow-y-auto p-4 md:p-6">
+          <Outlet />
         </main>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default MainLayout;
+export default MainLayout
